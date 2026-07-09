@@ -1,7 +1,6 @@
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import bcrypt from "bcryptjs";
-import { title } from "process";
+import { hash } from "bcrypt-ts";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -16,7 +15,7 @@ async function main() {
   await prisma.group.deleteMany();
   await prisma.user.deleteMany();
 
-  const password = await bcrypt.hash("password123", 12);
+  const password = await hash("password123", 12);
 
   // Create users
   const rahul = await prisma.user.create({
@@ -57,7 +56,7 @@ async function main() {
   });
 
   // Expense 1: Rahul pays ₹3,000 for dinner, split three ways = ₹1,000 each
-  const dinner = await prisma.expense.create({
+  await prisma.expense.create({
     data: {
       groupId: group.id,
       title: "Dinner",
@@ -75,7 +74,7 @@ async function main() {
   });
 
   // Expense 2: Sneha pays ₹1,500 for transport, split three ways = ₹500 each
-  const transport = await prisma.expense.create({
+  await prisma.expense.create({
     data: {
       groupId: group.id,
       title: "Transport",
