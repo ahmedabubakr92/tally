@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  createdGroups       Group[]
+  memberships         GroupMember[]
+  paidExpenses        Expense[]      @relation("PaidBy")
+  expenseSplits       ExpenseSplit[]
+  settlementsPaid     Settlement[]   @relation("SettlementPaidBy")
+  settlementsReceived Settlement[]   @relation("SettlementPaidTo")
+  activityLogs        ActivityLog[]
+
+  @@map("users")
+}
+
+model Group {
+  id        String   @id @default(uuid())
+  name      String
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  creator     User          @relation(fields: [createdBy], references: [id])
+  members     GroupMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+  activities  ActivityLog[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  groupId  String   @map("group_id")
+  userId   String   @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+  @@map("group_members")
+}
+
+model Expense {
+  id             String   @id @default(uuid())
+  groupId        String   @map("group_id")
+  title          String
+  amount         Decimal  @db.Decimal(10, 2)
+  paidById       String   @map("paid_by_id")
+  idempotencyKey String   @unique @map("idempotency_key")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  group  Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidBy User           @relation("PaidBy", fields: [paidById], references: [id])
+  splits ExpenseSplit[]
+
+  @@map("expenses")
+}
+
+model ExpenseSplit {
+  id          String  @id @default(uuid())
+  expenseId   String  @map("expense_id")
+  userId      String  @map("user_id")
+  shareAmount Decimal @map("share_amount") @db.Decimal(10, 2)
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([expenseId, userId])
+  @@map("expense_splits")
+}
+
+model Settlement {
+  id             String   @id @default(uuid())
+  groupId        String   @map("group_id")
+  paidById       String   @map("paid_by_id")
+  paidToId       String   @map("paid_to_id")
+  amount         Decimal  @db.Decimal(10, 2)
+  idempotencyKey String   @unique @map("idempotency_key")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  group  Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidBy User  @relation("SettlementPaidBy", fields: [paidById], references: [id])
+  paidTo User  @relation("SettlementPaidTo", fields: [paidToId], references: [id])
+
+  @@map("settlements")
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  groupId    String   @map("group_id")
+  userId     String   @map("user_id")
+  actionType String   @map("action_type")
+  metadata   Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
