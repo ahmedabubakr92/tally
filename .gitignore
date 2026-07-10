@@ -46,3 +46,4 @@ next-env.d.ts
 # Ignore all md files except for the README.md
 *.md
 !README.md
+.vscode/
