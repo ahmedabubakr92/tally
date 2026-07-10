@@ -1,0 +1,58 @@
+export function TallyMark() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 28 28"
+      fill="none"
+      aria-hidden="true"
+      className="text-primary shrink-0"
+    >
+      <line
+        x1="6"
+        y1="4"
+        x2="6"
+        y2="24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="11"
+        y1="4"
+        x2="11"
+        y2="24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="16"
+        y1="4"
+        x2="16"
+        y2="24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="21"
+        y1="4"
+        x2="21"
+        y2="24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <line
+        x1="3"
+        y1="20"
+        x2="24"
+        y2="8"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
