@@ -62,17 +62,21 @@ export default function LogInPage() {
               type="password"
               autoComplete="current-password"
               required
+              aria-invalid={!!state?.errors?.password}
+              aria-describedby={
+                state?.errors?.password ? "password-error" : undefined
+              }
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
             {state?.errors?.password && (
-              <p className="text-xs text-destructive">
+              <p id="password-error" className="text-xs text-destructive" role="alert">
                 {state.errors.password[0]}
               </p>
             )}
           </div>
 
           {state?.formError && (
-            <p className="text-sm text-destructive">{state.formError}</p>
+            <p className="text-sm text-destructive" role="alert">{state.formError}</p>
           )}
 
           <Button
