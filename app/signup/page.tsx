@@ -6,7 +6,6 @@ import { signUp } from "./actions";
 import { Button } from "@/components/ui/button";
 import { TallyMark } from "@/components/TallyMark";
 
-
 export default function SignUpPage() {
   const [state, action, pending] = useActionState(signUp, undefined);
 
@@ -39,10 +38,18 @@ export default function SignUpPage() {
               type="text"
               autoComplete="name"
               required
+              aria-invalid={!!state?.errors?.name}
+              aria-describedby={state?.errors?.name ? "name-error" : undefined}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
             {state?.errors?.name && (
-              <p className="text-xs text-destructive">{state.errors.name[0]}</p>
+              <p
+                id="name-error"
+                className="text-xs text-destructive"
+                role="alert"
+              >
+                {state.errors.name[0]}
+              </p>
             )}
           </div>
 
@@ -56,10 +63,18 @@ export default function SignUpPage() {
               type="email"
               autoComplete="email"
               required
+              aria-invalid={!!state?.errors?.email}
+              aria-describedby={
+                state?.errors?.email ? "email-error" : undefined
+              }
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
             {state?.errors?.email && (
-              <p className="text-xs text-destructive">
+              <p
+                id="email-error"
+                className="text-xs text-destructive"
+                role="alert"
+              >
                 {state.errors.email[0]}
               </p>
             )}
@@ -75,18 +90,20 @@ export default function SignUpPage() {
               type="password"
               autoComplete="new-password"
               required
+              aria-invalid={!!state?.errors?.password}
+              aria-describedby={state?.errors?.password ? "password-error" : undefined}
               minLength={8}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
             {state?.errors?.password && (
-              <p className="text-xs text-destructive">
+              <p id="password-error" className="text-xs text-destructive" role="alert">
                 {state.errors.password[0]}
               </p>
             )}
           </div>
 
           {state?.formError && (
-            <p className="text-sm text-destructive">{state.formError}</p>
+            <p className="text-sm text-destructive" role="alert">{state.formError}</p>
           )}
 
           <Button
