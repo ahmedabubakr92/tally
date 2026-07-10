@@ -35,10 +35,18 @@ export default function LogInPage() {
               type="email"
               autoComplete="email"
               required
+              aria-invalid={!!state?.errors?.email}
+              aria-describedby={
+                state?.errors?.email ? "email-error" : undefined
+              }
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
             />
             {state?.errors?.email && (
-              <p className="text-xs text-destructive">
+              <p
+                id="email-error"
+                className="text-xs text-destructive"
+                role="alert"
+              >
                 {state.errors.email[0]}
               </p>
             )}

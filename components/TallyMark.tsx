@@ -5,6 +5,7 @@ export function TallyMark() {
       height="24"
       viewBox="0 0 28 28"
       fill="none"
+      aria-hidden="true"
       className="text-primary shrink-0"
     >
       <line
