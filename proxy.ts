@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
   const payload = token ? await verifyToken(token) : null;
 
   const protectedPages = ["/groups"];
-  const protectedApis = ["/api/user", "/api/groups"];
+  const protectedApis = ["/api/groups"];
   const guestOnlyPages = ["/login", "/signup"];
 
   const isProtectedPage = protectedPages.some((p) => pathname.startsWith(p));
