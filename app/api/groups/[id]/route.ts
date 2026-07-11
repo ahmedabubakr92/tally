@@ -13,17 +13,17 @@ export async function GET(
 
   const { id: groupId } = await params;
 
-  const membership = await prisma.groupMember.findUnique({
-    where: { groupId_userId: { groupId, userId } },
-  });
-  if (!membership) {
-    return NextResponse.json(
-      { error: "Group not found or access denied." },
-      { status: 404 },
-    );
-  }
-
   try {
+    const membership = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId } },
+    });
+    if (!membership) {
+      return NextResponse.json(
+        { error: "Group not found or access denied." },
+        { status: 404 },
+      );
+    }
+
     const group = await prisma.group.findUnique({
       where: { id: groupId },
       include: {
@@ -55,6 +55,10 @@ export async function GET(
         },
       },
     });
+
+    if (!group) {
+      return NextResponse.json({ error: "Group not found." }, { status: 404 });
+    }
 
     return NextResponse.json({ group });
   } catch (error) {
