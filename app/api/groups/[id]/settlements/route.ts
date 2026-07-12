@@ -5,7 +5,6 @@ import { recordSettlementSchema } from "@/lib/validations/settlement";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
-
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -117,15 +116,16 @@ export async function POST(
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
+      const existing = await prisma.settlement.findUnique({
+        where: { idempotencyKey },
+      });
+      if (existing) {
+        return NextResponse.json({ settlement: existing }, { status: 200 });
+      }
       return NextResponse.json(
         { error: "Duplicate request." },
         { status: 409 },
       );
     }
-    console.error("Failed to record settlement,", error);
-    return NextResponse.json(
-      { error: "Failed to record settlement." },
-      { status: 500 },
-    );
   }
 }
