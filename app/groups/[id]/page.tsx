@@ -2,8 +2,10 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUserId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { computeBalances } from "@/lib/balances";
 import AppHeader from "@/components/AppHeader";
 import AddMemberForm from "@/components/AddMemberForm";
+import AddExpenseForm from "@/components/AddExpenseForm";
 import { formatActivity } from "@/lib/utils";
 
 export default async function GroupDetail({
@@ -35,6 +37,13 @@ export default async function GroupDetail({
         },
         orderBy: { createdAt: "desc" },
       },
+      settlements: {
+        include: {
+          paidBy: { select: { id: true, name: true } },
+          paidTo: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
       activities: {
         include: { user: { select: { name: true } } },
         orderBy: { createdAt: "desc" },
@@ -44,6 +53,15 @@ export default async function GroupDetail({
   });
 
   if (!group) notFound();
+
+  const nameById = new Map(group.members.map((m) => [m.userId, m.user.name]));
+
+  const balances = computeBalances(group.expenses, group.settlements);
+
+  const members = group.members.map((m) => ({
+    id: m.userId,
+    name: m.user.name,
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,6 +78,7 @@ export default async function GroupDetail({
           <h1 className="text-xl font-semibold">{group.name}</h1>
         </div>
 
+        {/* Members */}
         <section className="space-y-3">
           <h2 className="font-medium">Members ({group.members.length})</h2>
           <ul className="space-y-3">
@@ -80,8 +99,49 @@ export default async function GroupDetail({
           <AddMemberForm groupId={groupId} />
         </section>
 
+        {/* Balances */}
         <section className="space-y-3">
-          <h2 className="font-medium">Expenses ({group.expenses.length})</h2>
+          <h2 className="font-medium">Balances</h2>
+          {balances.length === 0 ? (
+            <p className="text-sm text-muted-foreground">All settled up.</p>
+          ) : (
+            <ul className="space-y-2">
+              {balances.map((b) => (
+                <li
+                  key={`${b.fromUserId}-${b.toUserId}`}
+                  className="flex items-center justify-between rounded-lg border border-border px-4 py-3"
+                >
+                  <span className="text-sm">
+                    <span className="font-medium">
+                      {nameById.get(b.fromUserId)}
+                    </span>
+                    {" owes "}
+                    <span className="font-medium">
+                      {nameById.get(b.toUserId)}
+                    </span>
+                  </span>
+                  <span className="text-sm font-medium text-destructive">
+                    AED{" "}
+                    {b.amount.toLocaleString("en-AE", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* Expenses */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-medium">Expenses ({group.expenses.length})</h2>
+            <AddExpenseForm
+              groupId={groupId}
+              members={members}
+              currentUserId={userId}
+            />
+          </div>
           {group.expenses.length === 0 ? (
             <p className="text-sm text-muted-foreground">No expenses yet.</p>
           ) : (
@@ -94,7 +154,10 @@ export default async function GroupDetail({
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{expense.title}</span>
                     <span className="text-sm font-medium">
-                      AED {Number(expense.amount).toLocaleString("en-AE")}
+                      AED{" "}
+                      {Number(expense.amount).toLocaleString("en-AE", {
+                        minimumFractionDigits: 2,
+                      })}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -107,6 +170,7 @@ export default async function GroupDetail({
           )}
         </section>
 
+        {/* Actvity Logs */}
         {group.activities.length > 0 && (
           <section className="space-y-3">
             <h2 className="font-medium">Activity</h2>
