@@ -7,6 +7,7 @@ import AppHeader from "@/components/AppHeader";
 import AddMemberForm from "@/components/AddMemberForm";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import { formatActivity } from "@/lib/utils";
+import SettleUpForm from "@/components/SettleUpForm";
 
 export default async function GroupDetail({
   params,
@@ -130,6 +131,12 @@ export default async function GroupDetail({
               ))}
             </ul>
           )}
+          <SettleUpForm
+            groupId={groupId}
+            members={members}
+            currentUserId={userId}
+            balances={balances}
+          />
         </section>
 
         {/* Expenses */}
