@@ -100,7 +100,7 @@ export async function POST(
           groupId,
           userId,
           actionType: "EXPENSE_ADDED",
-          metadata: { title, normalizedAmount, paidById },
+          metadata: { title, amount: normalizedAmount, paidById },
         },
       });
 
