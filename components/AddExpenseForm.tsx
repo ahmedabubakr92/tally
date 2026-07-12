@@ -25,6 +25,9 @@ export default function AddExpenseForm({
   );
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState(() =>
+    crypto.randomUUID(),
+  );
 
   function toggleSplit(userId: string) {
     setSplitBetween((prev) =>
@@ -52,7 +55,7 @@ export default function AddExpenseForm({
           amount: parseFloat(amount),
           paidById,
           splitBetween,
-          idempotencyKey: crypto.randomUUID(),
+          idempotencyKey,
         }),
       });
 
@@ -76,6 +79,7 @@ export default function AddExpenseForm({
       setPaidById(currentUserId);
       setSplitBetween(members.map((m) => m.id));
       setOpen(false);
+      setIdempotencyKey(crypto.randomUUID());
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -199,7 +203,13 @@ export default function AddExpenseForm({
         <Button type="submit" size="sm" disabled={pending}>
           {pending ? "Adding..." : "Add Expense"}
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={handleCancel}>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={handleCancel}
+          disabled={pending}
+        >
           Cancel
         </Button>
       </div>

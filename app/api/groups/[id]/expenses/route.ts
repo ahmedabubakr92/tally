@@ -72,6 +72,7 @@ export async function POST(
     // Equal split with remainder going to the first person
     const n = splitBetween.length;
     const amountInFils = Math.round(amount * 100);
+    const normalizedAmount = (amountInFils / 100).toFixed(2);
     const baseShareFils = Math.floor(amountInFils / n);
     const remainderFils = amountInFils - baseShareFils * n;
 
@@ -87,7 +88,7 @@ export async function POST(
         data: {
           groupId,
           title,
-          amount: amount.toFixed(2),
+          amount: normalizedAmount,
           paidById,
           idempotencyKey,
           splits: { create: splits },
@@ -99,7 +100,7 @@ export async function POST(
           groupId,
           userId,
           actionType: "EXPENSE_ADDED",
-          metadata: { title, amount, paidById },
+          metadata: { title, normalizedAmount, paidById },
         },
       });
 

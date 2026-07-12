@@ -13,7 +13,10 @@ export const addExpenseSchema = z.object({
   paidById: z.string().min(1, { error: "Payer is required." }),
   splitBetween: z
     .array(z.string())
-    .min(1, { error: "Select at least one person to split with." }),
+    .min(1, { error: "Select at least one person to split with." })
+    .refine((ids) => new Set(ids).size === ids.length, {
+      error: "Duplicate participants are not allowed.",
+    }),
   idempotencyKey: z.string().min(1),
 });
 
