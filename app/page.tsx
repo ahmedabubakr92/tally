@@ -1,7 +1,7 @@
-export default function Home() {
-  return (
-    <main className="min-h-screen flex items-center justify-center">
-      <h1 className="text-2xl font-semibold tracking-tight">Tally</h1>
-    </main>
-  )
+import { redirect } from "next/navigation";
+import { getCurrentUserId } from "@/lib/auth";
+
+export default async function Home() {
+  const userId = await getCurrentUserId();
+  redirect(userId ? "/groups" : "/login");
 }
