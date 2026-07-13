@@ -71,8 +71,8 @@ export default async function GroupsPage() {
                         {group._count.expenses === 1 ? "expense" : "expenses"}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-sm text-muted-foreground">
+                    <div className="mt-1 space-y-0.5">
+                      <p className="text-sm text-muted-foreground truncate">
                         {group.members.length}{" "}
                         {group.members.length === 1 ? "member" : "members"}
                         {" · "}

@@ -56,8 +56,11 @@ export default function CreateGroupForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-start gap-2">
-      <div className="space-y-1">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row items-start gap-2 w-full"
+    >
+      <div className="space-y-1 w-full sm:w-auto">
         <input
           type="text"
           placeholder="Group name"
@@ -67,7 +70,7 @@ export default function CreateGroupForm() {
           required
           aria-label="Group name"
           aria-invalid={!!error}
-          className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 w-48"
+          className="w-full sm:w-48 rounded-lg border border-border bg-background px-3 py-1.5 text-sm outline-none transition-shadow focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
         />
         {error && (
           <p className="text-xs text-destructive" role="alert">
@@ -75,12 +78,14 @@ export default function CreateGroupForm() {
           </p>
         )}
       </div>
-      <Button type="submit" size="sm" disabled={pending}>
-        {pending ? "Creating..." : "Create"}
-      </Button>
-      <Button type="button" size="sm" variant="ghost" onClick={handleCancel}>
-        Cancel
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" size="sm" disabled={pending}>
+          {pending ? "Creating..." : "Create"}
+        </Button>
+        <Button type="button" size="sm" variant="ghost" onClick={handleCancel}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }

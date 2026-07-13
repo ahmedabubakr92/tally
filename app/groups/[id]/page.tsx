@@ -79,6 +79,14 @@ export default async function GroupDetail({
             ← Groups
           </Link>
           <h1 className="text-xl font-semibold">{group.name}</h1>
+          <p className="text-xs text-muted-foreground">
+            Created{" "}
+            {new Date(group.createdAt).toLocaleDateString("en-AE", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })}
+          </p>
         </div>
 
         {/* Members */}
@@ -172,6 +180,13 @@ export default async function GroupDetail({
                   <p className="text-xs text-muted-foreground mt-1">
                     Paid by {expense.paidBy.name} · split between{" "}
                     {expense.splits.map((s) => s.user.name).join(", ")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(expense.createdAt).toLocaleDateString("en-AE", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </p>
                 </li>
               ))}
