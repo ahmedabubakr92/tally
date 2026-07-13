@@ -4,6 +4,7 @@ import { getCurrentUserId } from "@/lib/auth";
 import { addExpenseSchema } from "@/lib/validations/expense";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { broadcast } from "@/lib/sse";
 
 export async function POST(
   request: Request,
@@ -106,6 +107,8 @@ export async function POST(
 
       return created;
     });
+
+    broadcast(groupId);
 
     return NextResponse.json({ expense }, { status: 201 });
   } catch (error) {
