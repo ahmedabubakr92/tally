@@ -24,11 +24,19 @@ export async function GET(
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
-      // Send an initial comment to establish the connection
       controller.enqueue(encoder.encode(": connected\n\n"));
       subscribe(groupId, controller);
 
+      const heartbeat = setInterval(() => {
+        try {
+          controller.enqueue(encoder.encode(": ping\n\n"));
+        } catch {
+          clearInterval(heartbeat);
+        }
+      }, 30_000);
+
       request.signal.addEventListener("abort", () => {
+        clearInterval(heartbeat);
         unsubscribe(groupId, controller);
       });
     },

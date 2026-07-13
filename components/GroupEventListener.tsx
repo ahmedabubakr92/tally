@@ -7,18 +7,30 @@ export default function GroupEventListener({ groupId }: { groupId: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const es = new EventSource(`/api/groups/${groupId}/events`);
+    let es: EventSource;
+    let unmounted = false;
 
-    es.onmessage = () => {
-      router.refresh();
-    };
+    function connect() {
+      if (unmounted) return;
+      es = new EventSource(`/api/groups/${groupId}/events`);
 
-    es.onerror = () => {
-      // Browser auto-reconnects on error; nothing to do here
-    };
+      es.onmessage = () => {
+        router.refresh();
+      };
+
+      es.onerror = () => {
+        if (es.readyState === EventSource.CLOSED && !unmounted) {
+          setTimeout(connect, 5_000);
+        }
+        // CONNECTING state: browser handles reconnect automatically
+      };
+    }
+
+    connect();
 
     return () => {
-      es.close();
+      unmounted = true;
+      es?.close();
     };
   }, [groupId, router]);
 
