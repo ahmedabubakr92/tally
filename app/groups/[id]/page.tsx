@@ -8,6 +8,7 @@ import AddMemberForm from "@/components/AddMemberForm";
 import AddExpenseForm from "@/components/AddExpenseForm";
 import { formatActivity } from "@/lib/utils";
 import SettleUpForm from "@/components/SettleUpForm";
+import GroupEventListener from "@/components/GroupEventListener";
 
 export default async function GroupDetail({
   params,
@@ -69,6 +70,7 @@ export default async function GroupDetail({
       <AppHeader />
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-8">
+        <GroupEventListener groupId={groupId} />
         <div className="space-y-1">
           <Link
             href="/groups"

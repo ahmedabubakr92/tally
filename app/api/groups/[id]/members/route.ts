@@ -4,6 +4,7 @@ import { getCurrentUserId } from "@/lib/auth";
 import { addMemberSchema } from "@/lib/validations/group";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/app/generated/prisma/client";
+import { broadcast } from "@/lib/sse";
 
 export async function POST(
   request: Request,
@@ -76,6 +77,8 @@ export async function POST(
         },
       }),
     ]);
+
+    broadcast(groupId);
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {

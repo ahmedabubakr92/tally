@@ -4,6 +4,7 @@ import { getCurrentUserId } from "@/lib/auth";
 import { recordSettlementSchema } from "@/lib/validations/settlement";
 import { Prisma } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { broadcast } from "@/lib/sse";
 
 export async function POST(
   request: Request,
@@ -110,6 +111,8 @@ export async function POST(
       return created;
     });
 
+    broadcast(groupId);
+
     return NextResponse.json({ settlement }, { status: 201 });
   } catch (error) {
     if (
@@ -127,5 +130,10 @@ export async function POST(
         { status: 409 },
       );
     }
+    console.error("Failed to record settlement.", error);
+    return NextResponse.json(
+      { error: "Failed to record settlement." },
+      { status: 500 },
+    );
   }
 }
